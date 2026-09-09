@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block contenido %}
+{% include 'admin_nav.html' %}
+
+<div class="tarjeta-formulario">
+    <h2>Editar producto</h2>
+    {% if errores %}
+    <div class="login-tarjeta__error">
+        <ul style="margin:0; padding-left:18px;">
+        {% for error in errores %}
+            <li>{{ error }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    <form method="POST" enctype="multipart/form-data">
+        <label>Nombre</label>
+        <input type="text" name="nombre" maxlength="100" value="{{ producto.nombre_producto }}" required>
+
+        <label>Precio (detal)</label>
+        <input type="number" step="0.01" min="0.01" max="99999999.99" name="precio" value="{{ producto.precio_producto }}" required>
+
+        <label>Precio al por mayor (50+ unidades)</label>
+        <input type="number" step="0.01" min="0.01" max="99999999.99" name="precio_mayor" value="{{ producto.precio_mayor if producto else '' }}">
+         
+
+        <label>Categoría</label>
+        <select name="categoria" class="select-categoria">
+         <option value="">Sin categoría</option>
+    {% for cat in categorias %}
+    <option value="{{ cat.codcategoria }}"
+        {% if producto and producto.categoria_id == cat.codcategoria %}selected{% endif %}>
+        {{ cat.dcategoria }}
+    </option>
+    {% endfor %}
+</select>
+
+        <label>Imagen</label>
+        <label class="subida-imagen" for="imagen">
+            {% if producto.url_imagen %}
+            <img src="{{ producto.url_imagen }}" class="subida-imagen__preview">
+            {% else %}
+            <span>Subir nueva imagen</span>
+            {% endif %}
+        </label>
+        <input type="file" id="imagen" name="imagen" accept="image/*" hidden onchange="mostrarVistaPrevia(this)">
+
+        <div class="switch-disponible">
+            <label>Disponible</label>
+            <label class="switch">
+                <input type="checkbox" name="disponible" {% if producto.estado == 1 %}checked{% endif %}>
+                <span class="switch__deslizador"></span>
+            </label>
+        </div>
+
+        <div class="acciones-formulario">
+            <a href="{{ url_for('panel_admin') }}" class="btn-cancelar">Cancelar</a>
+            <button type="submit" class="btn-guardar">Guardar</button>
+        </div>
+    </form>
+</div>
+
+<script>
+function mostrarVistaPrevia(input) {
+    if (input.files && input.files[0]) {
+        const lector = new FileReader();
+        lector.onload = e => {
+            input.parentElement.querySelector('.subida-imagen').innerHTML =
+                `<img src="${e.target.result}" class="subida-imagen__preview">`;
+        };
+        lector.readAsDataURL(input.files[0]);
+    }
+}
+</script>
+<script src="{{ url_for('static', filename='js/validacion_producto.js') }}"></script>
+{% endblock %}

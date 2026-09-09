@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block contenido %}
+<div class="login-pantalla">
+    <div class="login-tarjeta">
+        <div class="login-tarjeta__logo">GC</div>
+        <p class="login-tarjeta__marca">GRUPO COLMACAR</p>
+        <h1>Inicio de sesión</h1>
+
+        <form action="/admin/login" method="POST">
+            <label>Usuario</label>
+            <input type="text" name="usuario" required>
+
+            <label>Contraseña</label>
+            <input type="password" name="contraseña" required>
+
+            {% if error %}
+            <p class="login-tarjeta__error">{{ error }}</p>
+            {% endif %}
+
+            <button type="submit">Entrar</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

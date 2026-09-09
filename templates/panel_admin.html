@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block titulo %}Panel de administración{% endblock %}
+
+{% block contenido %}
+{% include 'admin_nav.html' %}
+
+<div class="admin-contenido">
+    <div class="admin-encabezado">
+        <div>
+            <h1>Productos</h1>
+            <p>{{ paginacion.total }} productos publicados</p>
+        </div>
+        <a href="{{ url_for('inicio') }}" class="btn-secundario">← Volver a la página</a>
+        <a href="{{ url_for('nuevo_producto') }}" class="btn-dorado">+ Nuevo Producto</a>
+    </div>
+
+    <form class="admin-buscador" onsubmit="return false">
+        <input type="text" id="buscador-admin" placeholder="Buscar producto...">
+    </form>
+
+    <table class="tabla-productos">
+        <tr>
+            <th>Producto</th>
+            <th>Precio</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+        <tbody id="lista-productos-admin">
+            {% for producto in productos %}
+            <tr>
+                <td class="tabla-productos__nombre">
+                    {% if producto.url_imagen %}
+                    <img src="{{ producto.url_imagen }}" alt="">
+                    {% else %}
+                    <span class="tabla-productos__miniatura-vacia"></span>
+                    {% endif %}
+                    {{ producto.nombre_producto }}
+                </td>
+                <td class="tabla-productos__precio">${{ '%.2f'|format(producto.precio_producto) }}</td>
+                <td><span class="estado-pill">Activo</span></td>
+                <td class="tabla-productos__acciones">
+                    <a href="{{ url_for('editar_producto', id=producto.cod_producto) }}">✎</a>
+                    <form action="{{ url_for('eliminar_producto', id=producto.cod_producto) }}" method="POST" style="display:inline">
+                        <button type="submit" onclick="return confirm('¿Eliminar este producto?')">🗑</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% if paginacion.pages > 1 %}
+    <div class="paginacion">
+        {% if paginacion.has_prev %}
+        <a href="{{ url_for('panel_admin', pagina=paginacion.prev_num, q=busqueda) }}" class="paginacion__btn">← Anterior</a>
+        {% endif %}
+        <span class="paginacion__info">Página {{ paginacion.page }} de {{ paginacion.pages }}</span>
+        {% if paginacion.has_next %}
+        <a href="{{ url_for('panel_admin', pagina=paginacion.next_num, q=busqueda) }}" class="paginacion__btn">Siguiente →</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<script src="{{ url_for('static', filename='js/buscador.js') }}"></script>
+<script>
+crearBuscadorEnVivo({
+    inputId: 'buscador-admin',
+    contenedorId: 'lista-productos-admin',
+    endpoint: "{{ url_for('buscar_productos_admin') }}",
+    renderizarResultado: (p) => `
+        <tr>
+            <td class="tabla-productos__nombre">
+                ${p.imagen ? `<img src="${p.imagen}">` : `<span class="tabla-productos__miniatura-vacia"></span>`}
+                ${p.nombre}
+            </td>
+            <td class="tabla-productos__precio">$${p.precio.toFixed(2)}</td>
+            <td><span class="estado-pill">Activo</span></td>
+            <td class="tabla-productos__acciones">
+                <a href="/admin/productos/${p.id}/editar">✎</a>
+                <form action="/admin/productos/${p.id}/eliminar" method="POST" style="display:inline">
+                    <button type="submit" onclick="return confirm('¿Eliminar este producto?')">🗑</button>
+                </form>
+            </td>
+        </tr>
+    `
+});
+</script>
+{% endblock %}

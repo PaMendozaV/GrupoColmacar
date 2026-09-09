@@ -1,0 +1,25 @@
+<nav class="navbar-principal">
+    <a href="{{ url_for('inicio') }}" class="navbar-principal__logo">
+        <span class="navbar-principal__logo-marca">GC</span>
+        <span>Grupo Colmacar</span>
+    </a>
+
+    <button type="button" class="navbar-principal__hamburguesa" id="btn-menu-movil" aria-label="Abrir menú">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <div class="navbar-principal__links" id="menu-movil">
+        <a href="{{ url_for('inicio') }}">Inicio</a>
+        <a href="{{ url_for('catalogo') }}">Catálogo</a>
+        <a href="{{ url_for('nosotros') }}">Nosotros</a>
+    </div>
+</nav>
+
+<script>
+document.getElementById('btn-menu-movil').addEventListener('click', function() {
+    document.getElementById('menu-movil').classList.toggle('abierto');
+    this.classList.toggle('activo');
+});
+</script>
